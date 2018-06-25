@@ -1,3 +1,4 @@
+package main
 /*
  * [2] Add Two Numbers
  *
@@ -25,9 +26,6 @@
  * 
  * 
  */
-
-// Package main provides ...
-// package main
 
 // // Definition for singly-linked list.
 // type ListNode struct {
