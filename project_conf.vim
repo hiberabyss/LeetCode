@@ -10,6 +10,19 @@ function! LeetcodeGetTestCase()
     return
 endfunction
 
+function! LeetcodeOpenUrl()
+    let linenr = search(' https:\/\/leetcode', 'wn')
+    if linenr > 0
+        let match_res = matchlist(getline(linenr), '\v (http\S+)')
+        if len(match_res) > 1
+            execute(printf('silent! call system("open %s")', match_res[1]))
+            " return match_res[1]
+        endif
+    endif
+endfunction
+
+nmap <silent> ,lo :call LeetcodeOpenUrl()<cr>
+
 function! s:LeetcodePrepare()
     let l:submit_filename = expand('%') ."_tmp.go"
     execute(':w! ' .l:submit_filename)
@@ -57,10 +70,7 @@ nmap ,lg :LeetcodeShow
 
 function! s:GoRunTest()
     let l:fname = substitute(expand('%'), '_test', '', '')
-    let l:out_filename = 'autogen_test_run.go'
-    let l:dir = expand('%:p:h')
-    silent! call system(printf('gsed "1i \package main" %s > %s/%s', l:fname, l:dir, l:out_filename))
-    execute(printf(':Dispatch go test -v %s %s', l:out_filename, expand('%')))
+    execute(printf(':Dispatch go test -v %s %s', l:fname, expand('%')))
 endfunction
 
 function! s:GoAddPackageLine()
@@ -68,7 +78,7 @@ function! s:GoAddPackageLine()
         return
     endif
 
-    if search('^\s*package main', 'wn') > 0
+    if search('^\s*package ', 'wn') > 0
         return
     endif
 
