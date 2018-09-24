@@ -1,3 +1,8 @@
+function! LeetcodeInit()
+    let g:leetcode_lang = fnamemodify($PWD, ':t')
+endfunction
+call LeetcodeInit()
+
 function! LeetcodeGetTestCase()
     let linenr = search(' Testcase Example: ', 'wn')
     if linenr > 0
@@ -89,5 +94,21 @@ endfunction
 autocmd BufReadPost,BufWritePost *.go call <SID>GoAddPackageLine()
 
 autocmd FileType go nmap <buffer> ,rt :call <SID>GoRunTest()<cr>
+
+function! LeetcodeOpenProblem()
+    let items = matchlist(getline('.'), '\v\[\s*(\d+)\]')
+    if len(items) <= 0
+        return
+    endif
+
+    let problem_id = items[1]
+    1tabn
+    call s:LeetcodeGetProblem(problem_id, g:leetcode_lang)
+endfunction
+
+function! LeetcodeCaptureMap()
+    nmap <buffer> <silent> o :call LeetcodeOpenProblem()<cr>
+endfunction
+autocmd FileType capture call LeetcodeCaptureMap()
 
 command! -nargs=0 GoTest call s:GoRunTest()
