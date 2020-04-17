@@ -1,3 +1,22 @@
+nmap <silent> ,lo :call LeetcodeOpenUrl()<cr>
+nmap ,lt :call LeetcodeRunTest()<cr>
+nmap <silent> ,ls :call LeetcodeSubmit()<cr>
+nmap ,ll :Etcapture! leetcode list 
+nmap ,le :Etcapture! leetcode list -q eLD<cr>
+nmap ,lg :LeetcodeShow 
+autocmd FileType go nmap <buffer> ,rt :call <SID>GoRunTest()<cr>
+autocmd BufReadPost,BufWritePost *.go call <SID>GoAddPackageLine()
+
+command! -nargs=+ LeetcodeShow call <SID>LeetcodeGetProblem(<f-args>)
+
+function! LeetcodeCaptureMap()
+    nmap <buffer> <silent> o :call LeetcodeOpenProblem()<cr>
+    " nmap <buffer> <silent> <cr> :call LeetcodeOpenProblem()<cr>
+endfunction
+autocmd FileType capture call LeetcodeCaptureMap()
+
+command! -nargs=0 GoTest call s:GoRunTest()
+
 function! LeetcodeInit()
     let g:leetcode_lang = fnamemodify($PWD, ':t')
 endfunction
@@ -16,99 +35,77 @@ function! LeetcodeGetTestCase()
 endfunction
 
 function! LeetcodeOpenUrl()
-    let linenr = search(' https:\/\/leetcode', 'wn')
-    if linenr > 0
-        let match_res = matchlist(getline(linenr), '\v (http\S+)')
-        if len(match_res) > 1
-            execute(printf('silent! call system("open %s")', match_res[1]))
-            " return match_res[1]
-        endif
+  let linenr = search(' https:\/\/leetcode', 'wn')
+  if linenr > 0
+    let match_res = matchlist(getline(linenr), '\v (http\S+)')
+    if len(match_res) > 1
+      let url = substitute(match_res[1], 'description', 'solution', '')
+      execute(printf('silent! call system("open %s")', url))
     endif
+  endif
 endfunction
 
-nmap <silent> ,lo :call LeetcodeOpenUrl()<cr>
-
 function! s:LeetcodePrepare()
-    let l:submit_filename = expand('%') ."_tmp.go"
-    execute(':w! ' .l:submit_filename)
-    call system('gsed -i "/^package main/d" ' .l:submit_filename)
+  let l:submit_filename = expand('%') ."_tmp.go"
+  execute(':w! ' .l:submit_filename)
+  call system('gsed -i "/^package main/d" ' .l:submit_filename)
 
-    return l:submit_filename
+  return l:submit_filename
 endfunction
 
 function! LeetcodeRunTest()
-    if &ft == 'go'
-        let file = s:LeetcodePrepare()
-        execute(printf('Dispatch leetcode test %s -t %s; rm %s', file, LeetcodeGetTestCase(), file))
-    else
-        execute('Dispatch leetcode test % -t ' .LeetcodeGetTestCase())
-    endif
+  if &ft == 'go'
+    let file = s:LeetcodePrepare()
+    execute(printf('Dispatch leetcode test %s -t %s; rm %s', file, LeetcodeGetTestCase(), file))
+  else
+    execute('Dispatch leetcode test % -t ' .LeetcodeGetTestCase())
+  endif
 endfunction
-
-nmap ,lt :call LeetcodeRunTest()<cr>
 
 function! LeetcodeSubmit()
-    if &ft == "go"
-        let file = s:LeetcodePrepare()
-        execute(printf(':Dispatch leetcode submit %s ; rm %s', file, file))
-    else
-        execute(':Dispatch leetcode submit %')
-    endif
+  if &ft == "go"
+    let file = s:LeetcodePrepare()
+    execute(printf(':Dispatch leetcode submit %s ; rm %s', file, file))
+  else
+    execute(':Dispatch leetcode submit %')
+  endif
 endfunction
-
-nmap <silent> ,ls :call LeetcodeSubmit()<cr>
-
-nmap ,ll :Etcapture! leetcode list 
 
 function! s:LeetcodeGetProblem(id, ...)
-    let l:lang = 'golang'
-    if a:0 > 0
-        let l:lang = a:1
-    endif
+  let l:lang = 'golang'
+  if a:0 > 0
+    let l:lang = a:1
+  endif
 
-    execute(printf(':Dispatch leetcode show -gx -e tvim -l %s %s', l:lang, a:id))
+  execute(printf(':Dispatch leetcode show -gx -e tvim -l %s %s', l:lang, a:id))
 endfunction
 
-command! -nargs=+ LeetcodeShow call <SID>LeetcodeGetProblem(<f-args>)
-
-nmap ,lg :LeetcodeShow 
-
 function! s:GoRunTest()
-    let l:fname = substitute(expand('%'), '_test', '', '')
-    execute(printf(':Dispatch go test -v %s %s', l:fname, expand('%')))
+  let l:fname = substitute(expand('%'), '_test', '', '')
+  execute(printf(':Dispatch go test -v %s %s', l:fname, expand('%')))
 endfunction
 
 function! s:GoAddPackageLine()
-    if &ft != 'go'
-        return
-    endif
+  if &ft != 'go'
+    return
+  endif
 
-    if search('^\s*package ', 'wn') > 0
-        return
-    endif
+  if search('^\s*package ', 'wn') > 0
+    return
+  endif
 
-    call append(0, 'package main')
-    update
+  call append(0, 'package main')
+  update
 endfunction
-
-autocmd BufReadPost,BufWritePost *.go call <SID>GoAddPackageLine()
-
-autocmd FileType go nmap <buffer> ,rt :call <SID>GoRunTest()<cr>
 
 function! LeetcodeOpenProblem()
-    let items = matchlist(getline('.'), '\v\[\s*(\d+)\]')
-    if len(items) <= 0
-        return
-    endif
+  let items = matchlist(getline('.'), '\v\[\s*(\d+)\]')
+  if len(items) <= 0
+    return
+  endif
 
-    let problem_id = items[1]
-    1tabn
-    call s:LeetcodeGetProblem(problem_id, g:leetcode_lang)
+  let problem_id = items[1]
+  1tabn
+  call s:LeetcodeGetProblem(problem_id, g:leetcode_lang)
 endfunction
 
-function! LeetcodeCaptureMap()
-    nmap <buffer> <silent> o :call LeetcodeOpenProblem()<cr>
-endfunction
-autocmd FileType capture call LeetcodeCaptureMap()
-
-command! -nargs=0 GoTest call s:GoRunTest()
