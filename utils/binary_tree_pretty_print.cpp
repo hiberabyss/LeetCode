@@ -97,7 +97,7 @@ void printPretty(BinaryTree *root, int level, int indentSpace, ostream& out) {
   printLeaves(indentSpace, level, nodesInThisLevel, nodesQueue, out);
 }
 
-int main() {
+int main(int argc, char* argv[]) {
   BinaryTree *root = new BinaryTree(30);
   root->left = new BinaryTree(20);
   root->right = new BinaryTree(40);

@@ -1,8 +1,8 @@
 nmap <silent> ,lo :call LeetcodeOpenUrl()<cr>
 nmap ,lt :call LeetcodeRunTest()<cr>
 nmap <silent> ,ls :call LeetcodeSubmit()<cr>
-nmap ,ll :Etcapture! leetcode list 
-nmap ,le :Etcapture! leetcode list -q eLD<cr>
+nmap ,ll :Evcapture! leetcode list<cr>
+nmap ,le :Evcapture! leetcode list -q eLD<cr>
 nmap ,lg :LeetcodeShow 
 autocmd FileType go nmap <buffer> ,rt :call <SID>GoRunTest()<cr>
 autocmd BufReadPost,BufWritePost *.go call <SID>GoAddPackageLine()
@@ -11,7 +11,7 @@ command! -nargs=+ LeetcodeShow call <SID>LeetcodeGetProblem(<f-args>)
 
 function! LeetcodeCaptureMap()
     nmap <buffer> <silent> o :call LeetcodeOpenProblem()<cr>
-    " nmap <buffer> <silent> <cr> :call LeetcodeOpenProblem()<cr>
+    nmap <buffer> <silent> <cr> :call LeetcodeOpenProblem()<cr>
 endfunction
 autocmd FileType capture call LeetcodeCaptureMap()
 
@@ -72,12 +72,14 @@ function! LeetcodeSubmit()
 endfunction
 
 function! s:LeetcodeGetProblem(id, ...)
-  let l:lang = 'golang'
+  let l:lang = 'cpp'
   if a:0 > 0
     let l:lang = a:1
   endif
 
-  execute(printf(':Dispatch leetcode show -gx -e tvim -l %s %s', l:lang, a:id))
+  execute(printf(':Dispatch! leetcode show -gx -e tvim -l %s %s', l:lang, a:id))
+  " cclose
+  " wincmd o
 endfunction
 
 function! s:GoRunTest()
@@ -99,7 +101,7 @@ function! s:GoAddPackageLine()
 endfunction
 
 function! LeetcodeOpenProblem()
-  let items = matchlist(getline('.'), '\v\[\s*(\d+)\]')
+  let items = matchlist(getline('.'), '\v\[\s*(\d+)\s*\]')
   if len(items) <= 0
     return
   endif
