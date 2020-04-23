@@ -1,9 +1,14 @@
+" indent setting
+set shiftwidth=4
+set tabstop=4
+
 nmap <silent> ,lo :call LeetcodeOpenUrl()<cr>
 nmap ,lt :call LeetcodeRunTest()<cr>
 nmap <silent> ,ls :call LeetcodeSubmit()<cr>
-nmap ,ll :Evcapture! leetcode list<cr>
+nmap ,ll :Evcapture! leetcode list<cr>G
 nmap ,le :Evcapture! leetcode list -q eLD<cr>
 nmap ,lg :LeetcodeShow 
+nmap <A-i> /^\s*$<cr><c-l>cc
 autocmd FileType go nmap <buffer> ,rt :call <SID>GoRunTest()<cr>
 autocmd BufReadPost,BufWritePost *.go call <SID>GoAddPackageLine()
 
@@ -58,7 +63,8 @@ function! LeetcodeRunTest()
     let file = s:LeetcodePrepare()
     execute(printf('Dispatch leetcode test %s -t %s; rm %s', file, LeetcodeGetTestCase(), file))
   else
-    execute('Dispatch leetcode test % -t ' .LeetcodeGetTestCase())
+    " execute('Dispatch leetcode test % -t ' .LeetcodeGetTestCase())
+    execute('Dispatch leetcode test %')
   endif
 endfunction
 
@@ -78,6 +84,9 @@ function! s:LeetcodeGetProblem(id, ...)
   endif
 
   execute(printf(':Dispatch! leetcode show -gx -e tvim -l %s %s', l:lang, a:id))
+  " 1wincmd w
+  " silent! /^\s*$
+  " normal \<c-l>
   " cclose
   " wincmd o
 endfunction
@@ -107,7 +116,7 @@ function! LeetcodeOpenProblem()
   endif
 
   let problem_id = items[1]
-  1tabn
+  " 1tabn
   call s:LeetcodeGetProblem(problem_id, g:leetcode_lang)
 endfunction
 
