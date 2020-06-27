@@ -39,6 +39,21 @@ function! LeetcodeGetTestCase()
     return
 endfunction
 
+function! GetQuickfixTestCase()
+    " could change to use getqflist()
+    copen
+    let linenr = search(' testcase: ', 'wn')
+    if linenr > 0
+        let match_res = matchlist(getline(linenr), '\v testcase: (.*)$')
+        if len(match_res) > 1
+            return match_res[1]
+        endif
+    endif
+    wincmd w
+
+    return ""
+endfunction
+
 function! LeetcodeOpenUrl()
   let linenr = search(' https:\/\/leetcode', 'wn')
   if linenr > 0
@@ -59,11 +74,13 @@ function! s:LeetcodePrepare()
 endfunction
 
 function! LeetcodeRunTest()
+  let qf_test_case = GetQuickfixTestCase()
   if &ft == 'go'
     let file = s:LeetcodePrepare()
     execute(printf('Dispatch leetcode test %s -t %s; rm %s', file, LeetcodeGetTestCase(), file))
+  elseif len(qf_test_case) > 0
+    execute('Dispatch leetcode test % -t ' .qf_test_case)
   else
-    " execute('Dispatch leetcode test % -t ' .LeetcodeGetTestCase())
     execute('Dispatch leetcode test %')
   endif
 endfunction
@@ -84,11 +101,7 @@ function! s:LeetcodeGetProblem(id, ...)
   endif
 
   execute(printf(':Dispatch! leetcode show -gx -e tvim -l %s %s', l:lang, a:id))
-  " 1wincmd w
-  " silent! /^\s*$
-  " normal \<c-l>
-  " cclose
-  " wincmd o
+  silent Runtime UltiSnips
 endfunction
 
 function! s:GoRunTest()
@@ -120,3 +133,4 @@ function! LeetcodeOpenProblem()
   call s:LeetcodeGetProblem(problem_id, g:leetcode_lang)
 endfunction
 
+" vim:sw=2:ts=2:
