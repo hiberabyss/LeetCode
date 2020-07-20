@@ -1,11 +1,12 @@
 " indent setting
 set shiftwidth=4
 set tabstop=4
+set nowrap
 
 nmap <silent> ,lo :call LeetcodeOpenUrl()<cr>
 nmap ,lt :call LeetcodeRunTest()<cr>
 nmap <silent> ,ls :call LeetcodeSubmit()<cr>
-nmap ,ll :Evcapture! leetcode list<cr>G
+nmap ,ll :Evcapture! leetcode list -q eLD<cr>
 nmap ,le :Evcapture! leetcode list -q eLD<cr>
 nmap ,lg :LeetcodeShow 
 nmap <A-i> /^\s*$<cr><c-l>cc
