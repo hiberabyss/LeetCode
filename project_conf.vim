@@ -6,8 +6,10 @@ set wrap
 nmap <silent> ,lo :call LeetcodeOpenUrl()<cr>
 nmap ,lt :call LeetcodeRunTest()<cr>
 nmap <silent> ,ls :call LeetcodeSubmit()<cr>
-nmap ,ll :Evcapture! leetcode list -t algorithms -q eLD<cr>
-nmap ,le :Evcapture! leetcode list -t algorithms -q eLD<cr>
+nmap ,ll :Evcapture! tac <(leetcode list -t algorithms -q eLD)<cr>
+nmap ,lm :Evcapture! tac <(leetcode list -t algorithms -q mLD)<cr>
+nmap ,le :Evcapture! tac <(leetcode list -t algorithms -q eLD)<cr>
+nmap ,lh :Evcapture! tac <(leetcode list -t algorithms -q hLD)<cr>
 nmap ,lg :LeetcodeShow 
 nmap <A-i> /^\s*$<cr><c-l>cc
 autocmd FileType go nmap <buffer> ,rt :call <SID>GoRunTest()<cr>
