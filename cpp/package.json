@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "leetcode-cli": "github:hiberabyss/leetcode-cli"
+  }
+}

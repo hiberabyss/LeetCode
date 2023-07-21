@@ -1,21 +1,16 @@
 " indent setting
-set shiftwidth=4
-set tabstop=4
+set shiftwidth=2
+set tabstop=2
 set wrap
+set signcolumn=auto
 
-nmap <silent> ,lo :call LeetcodeOpenUrl()<cr>
-nmap ,lt :call LeetcodeRunTest()<cr>
-nmap <silent> ,ls :call LeetcodeSubmit()<cr>
-nmap ,ll :Evcapture! tac <(leetcode list -t algorithms -q eLD)<cr>
-nmap ,lm :Evcapture! tac <(leetcode list -t algorithms -q mLD)<cr>
-nmap ,le :Evcapture! tac <(leetcode list -t algorithms -q eLD)<cr>
-nmap ,lh :Evcapture! tac <(leetcode list -t algorithms -q hLD)<cr>
-nmap ,lg :LeetcodeShow 
-nmap <A-i> /^\s*$<cr><c-l>cc
-autocmd FileType go nmap <buffer> ,rt :call <SID>GoRunTest()<cr>
-autocmd BufReadPost,BufWritePost *.go call <SID>GoAddPackageLine()
+function! GetProblemID()
+  return split(expand('%:t'), '\.')[0]
+endfunction
 
-command! -nargs=+ LeetcodeShow call <SID>LeetcodeGetProblem(<f-args>)
+function! ShowSolution()
+  execute(printf('Ecapture leetcode show -l cpp %s --solution 2> /dev/zero', GetProblemID()))
+endfunction
 
 function! LeetcodeCaptureMap()
     nmap <buffer> <silent> o :call LeetcodeOpenProblem()<cr>
@@ -26,7 +21,7 @@ autocmd FileType capture call LeetcodeCaptureMap()
 command! -nargs=0 GoTest call s:GoRunTest()
 
 function! LeetcodeInit()
-    let g:leetcode_lang = fnamemodify($PWD, ':t')
+  let g:leetcode_lang = fnamemodify($PWD, ':t')
 endfunction
 call LeetcodeInit()
 
@@ -104,7 +99,7 @@ function! s:LeetcodeGetProblem(id, ...)
   endif
 
   execute(printf(':Dispatch! leetcode show -gx -e tvim -l %s %s', l:lang, a:id))
-  silent Runtime UltiSnips
+  " silent Runtime UltiSnips
 endfunction
 
 function! s:GoRunTest()
@@ -135,5 +130,27 @@ function! LeetcodeOpenProblem()
   " 1tabn
   call s:LeetcodeGetProblem(problem_id, g:leetcode_lang)
 endfunction
+
+function! LeetcodeRunCusTest(test)
+  execute(printf(':Dispatch leetcode test %s -t %s', expand('%'), a:test))
+endfunction
+command! -nargs=1 LeetTest call LeetcodeRunCusTest(<q-args>)
+
+nmap <silent> ,lo :call LeetcodeOpenUrl()<cr>
+nmap ,lt :call LeetcodeRunTest()<cr>
+nmap <silent> ,ls :call LeetcodeSubmit()<cr>
+nmap ,ll :Evcapture! tac <(leetcode list -t algorithms -q eLD)<cr>
+nmap ,lm :Evcapture! tac <(leetcode list -t algorithms -q mLD)<cr>
+nmap ,le :Evcapture! tac <(leetcode list -t algorithms -q eLD)<cr>
+nmap ,lh :Evcapture! tac <(leetcode list -t algorithms -q hLD)<cr>
+nmap ,lg :LeetcodeShow 
+nmap <A-i> /^\s*$<cr><c-l>cc
+
+autocmd FileType go nmap <buffer> ,rt :call <SID>GoRunTest()<cr>
+autocmd BufReadPost,BufWritePost *.go call <SID>GoAddPackageLine()
+command! -nargs=0 LeetSolution call ShowSolution()
+command! -nargs=+ LeetcodeShow call <SID>LeetcodeGetProblem(<f-args>)
+
+" command! -nargs=1 LCget call LeetcodeGet(<q-args>)
 
 " vim:sw=2:ts=2:
