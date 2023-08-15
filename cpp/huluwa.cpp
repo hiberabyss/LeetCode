@@ -14,7 +14,7 @@ vector<vector<int>> res;
 int N = 6;
 
 void buildStrategy(int idx, int sum, vector<int> cur) {
-  if (idx == N && sum == 6) {
+  if (idx == N && sum == N) {
     res.push_back(cur);
     return;
   }
