@@ -8,9 +8,9 @@ using namespace std;
 
 #include "59.spiral-matrix-ii.cpp"
 
-Solution sol;
+#define FunName generateMatrix
 
 TEST(testname, subname) {
-  EXPECT_EQ(s2vv("[[1]]"), Solution().generateMatrix(1));
-  EXPECT_EQ(s2vv("[[1,2,3],[8,9,4],[7,6,5]]"), Solution().generateMatrix(3));
+  Verify_I_VV("[[1]]", 1);
+  Verify_I_VV("[[1,2,3],[8,9,4],[7,6,5]]", 3);
 }

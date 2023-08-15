@@ -10,6 +10,8 @@
 
 using namespace std;
 
+class Solution;
+
 // Input: "[1,2,3]", "1,2,3", "1, 2, 3"
 // Output vector: {1, 2, 3}
 template<typename T = int>
@@ -54,6 +56,26 @@ vector<vector<T>> s2vv(const string& s) {
   }
 
   return res;
+}
+
+#define SolFun Solution().FunName
+
+// Name Pattern: Verify_INPUT_OUTPUT
+// V: vector
+// I: int
+#define Verify_I_VV(expect, input) { \
+  auto res = SolFun(input); \
+  EXPECT_EQ(s2vv(expect), res); \
+}
+
+// With _Ref means result also returned via input
+#define Verify_V_I_Ref(expect, input) { \
+  auto nums = s2v(input); \
+  auto expect_vec = s2v(expect); \
+  auto cnt = SolFun(nums); \
+  EXPECT_EQ(expect_vec.size(), cnt); \
+  nums.resize(cnt); \
+  EXPECT_EQ(expect_vec, nums); \
 }
 
 #endif /* end of include guard: LEETCODE_H */
