@@ -42,19 +42,39 @@
  * 
  * 
  */
+#include <algorithm>
 class Solution {
 public:
-    vector<vector<int>> permuteUnique(vector<int>& nums) {
-      vector<vector<int>> res(1);
-      sort(nums.begin(), nums.end());
-      for (int i = 0; i < nums.size(); ++i) {
-        int len = res.size();
-        for (int j = 0; j < len; ++j) {
-          auto cur = res[j];
-          res[j].push_back(nums[i]);
-          for (int k = 0; k < nums.size(); ++k) {
-          }
-        }
+  bool nextPermute(vector<int>& arr) {
+    int idx = arr.size() - 1;
+    while (idx > 0 && arr[idx - 1] >= arr[idx]) {
+      idx--;
+    }
+
+    if (idx == 0) {
+      return false;
+    }
+
+    for (int i = arr.size() - 1; i >= idx; i--) {
+      if (arr[i] > arr[idx - 1]) {
+        swap(arr[i], arr[idx-1]);
+        std::reverse(arr.begin() + idx, arr.end());
+        break;
       }
+    }
+
+    return true;
+  }
+
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+      vector<vector<int>> res;
+      std::sort(nums.begin(), nums.end());
+
+      res.push_back(nums);
+      while (nextPermute(nums)) {
+        res.push_back(nums);
+      }
+
+      return res;
     }
 };

@@ -4,6 +4,8 @@ set tabstop=2
 set wrap
 set signcolumn=auto
 
+let s:project_root = expand('<sfile>:p:h')
+
 function! GetProblemID()
   return split(expand('%:t'), '\.')[0]
 endfunction
@@ -98,7 +100,7 @@ function! s:LeetcodeGetProblem(id, ...)
     let l:lang = a:1
   endif
 
-  execute(printf(':Dispatch! leetcode show -gx -e tvim -l %s %s', l:lang, a:id))
+  execute(printf(':Dispatch! leetcode show -gkx -e tvim -l %s %s', l:lang, a:id))
   " silent Runtime UltiSnips
 endfunction
 
@@ -127,7 +129,6 @@ function! LeetcodeOpenProblem()
   endif
 
   let problem_id = items[1]
-  " 1tabn
   call s:LeetcodeGetProblem(problem_id, g:leetcode_lang)
 endfunction
 
@@ -139,6 +140,7 @@ command! -nargs=1 LeetTest call LeetcodeRunCusTest(<q-args>)
 nmap <silent> ,lo :call LeetcodeOpenUrl()<cr>
 nmap ,lt :call LeetcodeRunTest()<cr>
 nmap <silent> ,ls :call LeetcodeSubmit()<cr>
+nmap ,la :Evcapture! tac <(leetcode list -t algorithms -q L)<cr>
 nmap ,ll :Evcapture! tac <(leetcode list -t algorithms -q eLD)<cr>
 nmap ,lm :Evcapture! tac <(leetcode list -t algorithms -q mLD)<cr>
 nmap ,le :Evcapture! tac <(leetcode list -t algorithms -q eLD)<cr>
@@ -150,6 +152,16 @@ autocmd FileType go nmap <buffer> ,rt :call <SID>GoRunTest()<cr>
 autocmd BufReadPost,BufWritePost *.go call <SID>GoAddPackageLine()
 command! -nargs=0 LeetSolution call ShowSolution()
 command! -nargs=+ LeetcodeShow call <SID>LeetcodeGetProblem(<f-args>)
+
+" Linter {{{
+let $CPATH = printf("%s/include", s:project_root) . expand("$CPATH")
+let s:include_file = printf('-include %s/include/%s',
+      \ expand('<sfile>:p:h'), 'leetcode.h')
+
+let g:ale_cpp_cc_options = '-std=c++20 -Wall ' .s:include_file
+let g:ale_cpp_clangtidy_options = s:include_file
+ALEDisable | ALEEnable
+" }}}
 
 " command! -nargs=1 LCget call LeetcodeGet(<q-args>)
 

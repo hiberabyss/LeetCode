@@ -30,7 +30,34 @@
  */
 class Solution {
 public:
-    vector<string> generateParenthesis(int n) {
+    void buildParenthesis(const string& p,
+                          int left,
+                          int right,
+                          vector<string>& res) {
+        if (left == 0 && right == 0) {
+            res.push_back(p);
+            return;
+        }
 
+        if (left == 0) {
+            res.push_back(p + string(right, ')'));
+            return;
+        }
+
+        if (left <= right) {
+            buildParenthesis(p + '(', left - 1, right, res);
+        }
+        
+        if (left < right) {
+            buildParenthesis(p + ')', left, right - 1, res);
+        }
+    }
+
+    vector<string> generateParenthesis(int n) {
+        vector<string> res;
+
+        buildParenthesis("", n, n, res);
+
+        return res;
     }
 };

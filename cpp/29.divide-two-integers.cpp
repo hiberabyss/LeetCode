@@ -46,8 +46,33 @@
 class Solution {
 public:
     int divide(int dividend, int divisor) {
-      int int_max = (1<<31) - 1;
-      int int_min = -1 * (1<<31);
-      if (dividend == int_min && divisor == - 1) return int_max;
+      if (dividend == INT_MIN && divisor == -1) {
+        return INT_MAX;
+      }
+
+      if (dividend == INT_MIN && divisor == 1) {
+        return INT_MIN;
+      }
+
+      if (dividend > 0) {
+          return -divide(-dividend, divisor);
+      }
+
+      if (divisor > 0) {
+        return -divide(dividend, -divisor);
+      }
+
+      if (dividend > divisor) {
+        return 0;
+      }
+
+      int res = 1;
+      int cur = divisor;
+      while ((dividend - cur) <= cur) {
+        res += res;
+        cur += cur;
+      }
+
+      return res + divide(dividend - cur, divisor);
     }
 };
