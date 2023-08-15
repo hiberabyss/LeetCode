@@ -35,7 +35,7 @@ void buildStrategy(int idx, int sum, vector<int> cur) {
 // For each strategy:
 // size is 6
 // sum of elements == 6
-// element value <= index
+// sum of current elements <= index
 vector<vector<int>> allStrategies(int n) {
   N = n;
 
