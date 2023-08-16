@@ -24,3 +24,20 @@ TEST(s2vv, subname) {
   };
   EXPECT_EQ(test1, s2vv("[[1,2,3],[4,5,6]]"));
 }
+
+TEST(s2l, five) {
+  auto* res = s2l("[1,2,3]");
+
+  EXPECT_EQ(1, res->val);
+  res = res->next;
+  EXPECT_EQ(2, res->val);
+  res = res->next;
+  EXPECT_EQ(3, res->val);
+  res = res->next;
+  EXPECT_EQ(nullptr, res);
+}
+
+TEST(l2s, subname) {
+  auto* res = s2l("[2,3,4]");
+  EXPECT_EQ("[2,3,4]", l2s(res));
+}

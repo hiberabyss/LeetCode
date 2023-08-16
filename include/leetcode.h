@@ -12,6 +12,14 @@ using namespace std;
 
 class Solution;
 
+ struct ListNode {
+   int val;
+   ListNode *next;
+   ListNode() : val(0), next(nullptr) {}
+   ListNode(int x) : val(x), next(nullptr) {}
+   ListNode(int x, ListNode *next) : val(x), next(next) {}
+ };
+
 // Input: "[1,2,3]", "1,2,3", "1, 2, 3"
 // Output vector: {1, 2, 3}
 template<typename T = int>
@@ -32,6 +40,33 @@ vector<T> s2v(const string& s) {
     res.push_back(stoll(subs));
   }
 
+  return res;
+}
+
+ListNode* s2l(const string& s) {
+  ListNode res;
+
+  auto* pre = &res;
+  for (auto n : s2v(s)) {
+    pre->next = new ListNode(n);
+    pre = pre->next;
+  }
+
+  return res.next;
+}
+
+string l2s(const ListNode* head) {
+  string res = "[";
+
+  while (head != nullptr) {
+    res += to_string(head->val);
+    if (head->next != nullptr) {
+      res += ',';
+    }
+    head = head->next;
+  }
+
+  res += ']';
   return res;
 }
 
@@ -66,6 +101,13 @@ vector<vector<T>> s2vv(const string& s) {
 #define Verify_I_VV(expect, input) { \
   auto res = SolFun(input); \
   EXPECT_EQ(s2vv(expect), res); \
+}
+
+// support verify list input and list return
+#define Verify_L_L(expect, input) { \
+  auto* l_in = s2l(input); \
+  auto* res = SolFun(l_in); \
+  EXPECT_EQ(expect, l2s(res)); \
 }
 
 // With _Ref means result also returned via input
