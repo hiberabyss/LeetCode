@@ -1,6 +1,7 @@
 #ifndef LEETCODE_H
 #define LEETCODE_H
 
+#include <iostream>
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -25,19 +26,26 @@ class Solution;
 template<typename T = int>
 vector<T> s2v(const string& s) {
   vector<T> res;
+  if (s.size() <= 2) {
+    return res;
+  }
 
-  int idx = 0;
-  while (idx < s.size()) {
-    while (idx < s.size() && !isdigit(s[idx])) idx++;
-    int begin = idx;
+  int pos = 1;
+  while (pos < s.size()) {
+    auto next_pos = s.find(',', pos);
+    if (next_pos == string::npos) {
+      next_pos = s.size() - 1;
+    }
+    
+    auto subs = s.substr(pos, next_pos - pos);
 
-    if (begin >= s.size()) {
-      break;
+    if constexpr (is_integral_v<T>) {
+      res.push_back(stoll(subs));
+    } else {
+      res.push_back(subs);
     }
 
-    while (idx < s.size() && isdigit(s[idx])) idx++;
-    auto subs = s.substr(begin, idx - begin);
-    res.push_back(stoll(subs));
+    pos = next_pos + 1;
   }
 
   return res;
@@ -87,7 +95,7 @@ vector<vector<T>> s2vv(const string& s) {
       res.push_back(s2v<T>(s_sub_vec));
     }
 
-    pos = next_pos + 1;
+    pos = next_pos + 2;
   }
 
   return res;

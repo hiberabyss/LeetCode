@@ -1,10 +1,5 @@
 #include "leetcode.h"
 #include <gtest/gtest.h>
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
-
-using namespace std;
 
 #include "59.spiral-matrix-ii.cpp"
 
