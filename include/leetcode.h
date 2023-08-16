@@ -21,7 +21,7 @@ class Solution;
    ListNode(int x, ListNode *next) : val(x), next(next) {}
  };
 
-// Input: "[1,2,3]", "1,2,3", "1, 2, 3"
+// Input: "[1,2,3]"
 // Output vector: {1, 2, 3}
 template<typename T = int>
 vector<T> s2v(const string& s) {
