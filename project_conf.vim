@@ -73,7 +73,14 @@ function! s:LeetcodePrepare()
   return l:submit_filename
 endfunction
 
+function! ClearIncludeFile() abort
+  if &ft == "cpp"
+    silent g/^#include/d | update
+  endif
+endfunction
+
 function! LeetcodeRunTest()
+  call ClearIncludeFile()
   let qf_test_case = GetQuickfixTestCase()
   if &ft == 'go'
     let file = s:LeetcodePrepare()
@@ -86,6 +93,7 @@ function! LeetcodeRunTest()
 endfunction
 
 function! LeetcodeSubmit()
+  call ClearIncludeFile()
   if &ft == "go"
     let file = s:LeetcodePrepare()
     execute(printf(':Dispatch leetcode submit %s ; rm %s', file, file))
