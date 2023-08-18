@@ -3,6 +3,9 @@
  * Date  : 2023-08-15 18:45:47
  */
 
+// 代码解释和详细的运行结果可以看下面这篇文章：
+// https://zhuanlan.zhihu.com/p/650252601
+
 #include <cstdio>
 #include <iostream>
 #include <algorithm>

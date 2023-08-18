@@ -127,6 +127,10 @@ vector<vector<T>> s2vv(const string& s) {
   EXPECT_EQ(expect, l2s(res)); \
 }
 
+#define Verify_I_I(expect, input) { \
+  EXPECT_EQ(expect, SolFun(input)); \
+}
+
 // With _Ref means result also returned via input
 #define Verify_V_I_Ref(expect, input) { \
   auto nums = s2v(input); \
