@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <limits.h>
 #include <algorithm>
+#include <stack>
 
 using namespace std;
 
@@ -29,6 +30,35 @@ class Solution;
    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  };
+
+// Graph or Tree Node
+class Node {
+public:
+  int val;
+  Node* left;
+  Node* right;
+  Node* next;
+  Node* random = nullptr;
+
+  // added for graph in 133
+  vector<Node*> neighbors;
+
+  Node() : val(0), left(NULL), right(NULL), next(NULL) {
+    neighbors = vector<Node*>();
+  }
+
+  explicit Node(int _val) : val(_val), left(NULL), right(NULL), next(NULL) {
+    neighbors = vector<Node*>();
+  }
+
+  Node(int _val, vector<Node*> _neighbors) {
+    val = _val;
+    neighbors = _neighbors;
+  }
+
+  Node(int _val, Node* _left, Node* _right, Node* _next)
+      : val(_val), left(_left), right(_right), next(_next) {}
+};
 
 // Input: "[1,2,3]"
 // Output vector: {1, 2, 3}
