@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <set>
 #include <unordered_map>
 #include <unordered_set>
 #include <limits.h>
@@ -140,6 +141,8 @@ vector<vector<T>> s2vv(const string& s) {
   return res;
 }
 
+#define BRACED_INIT_LIST(...) {__VA_ARGS__}
+
 #define SolFun Solution().FunName
 
 // Name Pattern: Verify_INPUT_OUTPUT
@@ -150,6 +153,15 @@ vector<vector<T>> s2vv(const string& s) {
   EXPECT_EQ(s2vv(expect), res); \
 }
 
+#define Verify_V(type, expect, input) { \
+  vector<type> vec_input = BRACED_INIT_LIST input; \
+  auto res = SolFun(vec_input); \
+  EXPECT_EQ(expect, res); \
+}
+
+#define Verify_Vs(expect, input) Verify_V(string, expect, input)
+#define Verify_Vi(expect, input) Verify_V(int, expect, input)
+
 // support verify list input and list return
 #define Verify_L_L(expect, input) { \
   auto* l_in = s2l(input); \
@@ -158,6 +170,10 @@ vector<vector<T>> s2vv(const string& s) {
 }
 
 #define Verify_I_I(expect, input) { \
+  EXPECT_EQ(expect, SolFun(input)); \
+}
+
+#define Verify(expect, input) { \
   EXPECT_EQ(expect, SolFun(input)); \
 }
 
