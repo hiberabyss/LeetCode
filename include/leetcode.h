@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <iostream>
+#include <type_traits>
 #include <vector>
 #include <string>
 #include <set>
@@ -67,6 +68,7 @@ inline constexpr bool is_container_v = is_container<T>::value;
 // }}}
 
 class Solution;
+ListNode* v2l(const vector<int>& v);
 
 struct ListNode {
   int val;
@@ -75,6 +77,32 @@ struct ListNode {
   explicit ListNode(int x) : val(x), next(nullptr) {}
   ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
+
+vector<int> l2v(const ListNode* l) {
+  vector<int> res;
+  while (l != nullptr) {
+    res.push_back(l->val);
+    l = l->next;
+  }
+  return res;
+}
+
+bool Equal(const ListNode* l, const ListNode* l2) {
+  if (l == l2) {
+    return true;
+  }
+
+  while (l && l2 && l->val == l2->val) {
+    l = l->next;
+    l2 = l2->next;
+  }
+
+  if (l == nullptr && l2 == nullptr) {
+    return true;
+  }
+
+  return false;
+}
 
 struct TreeNode {
   int val;
@@ -156,6 +184,18 @@ ListNode* s2l(const string& s) {
   return res.next;
 }
 
+ListNode* v2l(const vector<int>& v) {
+  ListNode res;
+
+  auto* pre = &res;
+  for (auto n : v) {
+    pre->next = new ListNode(n);
+    pre = pre->next;
+  }
+
+  return res.next;
+}
+
 string l2s(const ListNode* head) {
   string res = "[";
 
@@ -205,6 +245,13 @@ vector<vector<T>> s2vv(const string& s) {
 #define FunArgc FunTraits::nargs
 
 template<typename T>
+struct clear_const_ref {
+  typedef remove_const_t<remove_reference_t<T>> type;
+};
+template<typename T>
+using clear_const_ref_t = typename clear_const_ref<T>::type;
+
+template<typename T>
 struct verify;
 
 template<typename Class, typename R, typename ...Args>
@@ -223,22 +270,51 @@ struct verify<R(Class::*)(Args...)> {
   template <size_t i> struct arg {
     typedef typename std::tuple_element<i, args_tuple>::type type;
   };
+  template <size_t i> using arg_t = typename arg<i>::type;
 
-  constexpr void do_verify(R expect, typename remove_reference<Args>::type ...args) {
+  // using Arg0Type = typename remove_reference<typename arg<0>::type>::type;
+  using Arg0Type = clear_const_ref_t<arg_t<0>>;
+  using ResultType = clear_const_ref_t<R>;
+
+  void do_verify_trunc_ref(Arg0Type expect, remove_reference_t<Args> ...args) {
+    auto nums(args...);
+    auto cnt = mem_fn(func)(sol, nums);
+    EXPECT_EQ(expect.size(), cnt);
+    nums.resize(cnt);
+    EXPECT_EQ(expect, nums);
+  }
+
+  void do_verify(R expect, remove_reference_t<Args> ...args) {
+    if (is_same_v<ListNode*, ResultType> && is_same_v<ResultType, Arg0Type>) {
+      auto actual = mem_fn(func)(sol, args...);
+      EXPECT_EQ(l2v(expect), l2v(actual));
+      return;
+    }
+
     if constexpr (nargs == 1) {
-      typename remove_reference<typename arg<0>::type>::type input(args...);
+      Arg0Type input(args...);
       auto actual = mem_fn(func)(sol, input);
       EXPECT_EQ(expect, actual);
-    } else {
-      auto actual = mem_fn(func)(sol, std::forward<Args>(args)...);
-      EXPECT_EQ(expect, actual);
+      return;
     }
+
+    auto actual = mem_fn(func)(sol, std::forward<Args>(args)...);
+    EXPECT_EQ(expect, actual);
   }
+
+  // void do_verify(ListNode* expect, ListNode* input) {
+  //   auto actual = mem_fn(func)(sol, input);
+  //   EXPECT_EQ(l2v(expect), l2v(actual));
+  //   return;
+  // }
+
 };
 
 #define _VERIFIER verify<SolMemType>(new Solution, SolMem)
 
 #define VERIFY _VERIFIER.do_verify
+
+#define VERIFY_TRUNC_REF _VERIFIER.do_verify_trunc_ref
 
 // Name Pattern: Verify_INPUT_OUTPUT
 // V: vector

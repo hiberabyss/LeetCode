@@ -6,5 +6,5 @@
 #define FunName insertionSortList
 
 TEST(testname, subname) {
-  Verify_L_L("[1,2,3,4]", "[4,2,1,3]");
+  VERIFY(v2l({1,2,3,4}), v2l({4,2,1,3}));
 }

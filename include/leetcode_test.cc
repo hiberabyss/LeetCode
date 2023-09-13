@@ -44,6 +44,26 @@ TEST(s2l, five) {
   EXPECT_EQ(nullptr, res);
 }
 
+TEST(l2v, List_to_vec) {
+  auto* res = s2l("[1,2,3]");
+  vector<int> expect = {1,2,3};
+  EXPECT_EQ(expect, l2v(res));
+}
+
+TEST(v2l, subname) {
+  auto* l = v2l({1, 2, 3});
+  vector<int> expect = {1,2,3};
+
+  EXPECT_EQ(expect, l2v(l));
+}
+
+TEST(ListNode, equal) {
+  auto* l1 = v2l({});
+  auto* l2 = v2l({});
+
+  EXPECT_TRUE(Equal(l1, l2));
+}
+
 TEST(l2s, subname) {
   auto* res = s2l("[2,3,4]");
   EXPECT_EQ("[2,3,4]", l2s(res));

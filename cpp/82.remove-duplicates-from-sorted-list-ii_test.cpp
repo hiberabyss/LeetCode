@@ -6,7 +6,7 @@
 #define FunName deleteDuplicates
 
 TEST(testname, subname) {
-  Verify_L_L("[]", "[1,1]");
-  Verify_L_L("[2,3]", "[1,1,1,2,3]");
-  Verify_L_L("[1,2,5]", "[1,2,3,3,4,4,5]");
+  VERIFY(v2l({}), v2l({1,1}));
+  VERIFY(v2l({2,3}), v2l({1,1,1,2,3}));
+  VERIFY(v2l({1,2,5}), v2l({1,2,3,3,4,4,5}));
 }
