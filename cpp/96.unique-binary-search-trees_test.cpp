@@ -6,7 +6,7 @@
 #define FunName numTrees
 
 TEST(testname, subname) {
-  Verify_I_I(1, 1);
-  Verify_I_I(2, 2);
-  Verify_I_I(5, 3);
+  VERIFY(1, 1);
+  VERIFY(2, 2);
+  VERIFY(5, 3);
 }

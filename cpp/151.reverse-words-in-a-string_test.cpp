@@ -6,5 +6,5 @@
 #define FunName reverseWords
 
 TEST(testname, subname) {
-  Verify("blue is sky the", "the sky is blue");
+  VERIFY("blue is sky the", "the sky is blue");
 }

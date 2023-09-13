@@ -6,5 +6,5 @@
 #define FunName evalRPN
 
 TEST(testname, subname) {
-  Verify_Vs_I(6, ("4","13","5","/","+"));
+  VERIFY(6, {"4","13","5","/","+"});
 }

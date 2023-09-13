@@ -6,6 +6,7 @@
 #define FunName generateMatrix
 
 TEST(testname, subname) {
-  Verify_I_VV("[[1]]", 1);
-  Verify_I_VV("[[1,2,3],[8,9,4],[7,6,5]]", 3);
+  VERIFY({{1}}, 1);
+  VERIFY({{1}}, 1);
+  VERIFY({{1,2,3},{8,9,4},{7,6,5}}, 3);
 }

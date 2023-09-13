@@ -1,6 +1,7 @@
 #ifndef LEETCODE_H
 #define LEETCODE_H
 
+#include <functional>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -10,27 +11,79 @@
 #include <limits.h>
 #include <algorithm>
 #include <stack>
+#include <gtest/gtest.h>
 
 using namespace std;
 
+struct ListNode;
+
+// extract function arguments type {{{
+template<typename T> struct function_traits;  
+
+template<typename R, typename ...Args> 
+struct _function_traits {
+  static const size_t nargs = sizeof...(Args);
+
+  using result_type = R;
+  using args_tuple = std::tuple<Args...>;
+
+  template <size_t i> struct arg {
+    typedef typename std::tuple_element<i, args_tuple>::type type;
+  };
+};
+
+template<typename R, typename ...Args> 
+struct function_traits<std::function<R(Args...)>> {
+  using traits = _function_traits<R, Args...>;
+
+  inline constexpr static const size_t nargs = sizeof...(Args);
+  using result_type = R;
+  template<size_t i>
+  using arg = typename traits::template arg<i>::type;
+
+  constexpr static string get_signature() {
+    return "";
+  }
+};
+
+template<typename ClassType, typename R, typename...Args>
+struct function_traits<R(ClassType::*)(Args...)> {
+  using traits = _function_traits<R, Args...>;
+
+  inline constexpr static size_t nargs = sizeof...(Args);
+  using result_type = R;
+  template<size_t i>
+  using arg = typename traits::template arg<i>::type;
+};
+// }}}
+
+// custom type traits {{{
+template<typename T>
+struct is_container :
+  bool_constant<requires(const T& t) {t.empty();}> {};
+
+template<typename T>
+inline constexpr bool is_container_v = is_container<T>::value;
+// }}}
+
 class Solution;
 
- struct ListNode {
-   int val;
-   ListNode *next;
-   ListNode() : val(0), next(nullptr) {}
-   ListNode(int x) : val(x), next(nullptr) {}
-   ListNode(int x, ListNode *next) : val(x), next(next) {}
- };
+struct ListNode {
+  int val;
+  ListNode *next;
+  ListNode() : val(0), next(nullptr) {}
+  explicit ListNode(int x) : val(x), next(nullptr) {}
+  ListNode(int x, ListNode *next) : val(x), next(next) {}
+};
 
- struct TreeNode {
-   int val;
-   TreeNode *left;
-   TreeNode *right;
-   TreeNode() : val(0), left(nullptr), right(nullptr) {}
-   TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-   TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
- };
+struct TreeNode {
+  int val;
+  TreeNode *left;
+  TreeNode *right;
+  TreeNode() : val(0), left(nullptr), right(nullptr) {}
+  explicit TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+  TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+};
 
 // Graph or Tree Node
 class Node {
@@ -144,6 +197,48 @@ vector<vector<T>> s2vv(const string& s) {
 #define BRACED_INIT_LIST(...) {__VA_ARGS__}
 
 #define SolFun Solution().FunName
+#define SolMem (&Solution::FunName)
+#define SolMemType decltype(SolMem)
+
+#define FunTraits function_traits<SolMemType>
+#define FunArg0Type remove_reference<FunTraits::arg<0>>::type
+#define FunArgc FunTraits::nargs
+
+template<typename T>
+struct verify;
+
+template<typename Class, typename R, typename ...Args>
+struct verify<R(Class::*)(Args...)> {
+  using mem_func = R(Class::*)(Args...);
+  unique_ptr<Solution> sol;
+  mem_func func;
+
+  inline constexpr static const size_t nargs = sizeof...(Args);
+
+  explicit verify(Solution* s, mem_func f)
+      : sol(s), func(f) {}
+
+  using args_tuple = std::tuple<Args...>;
+
+  template <size_t i> struct arg {
+    typedef typename std::tuple_element<i, args_tuple>::type type;
+  };
+
+  constexpr void do_verify(R expect, typename remove_reference<Args>::type ...args) {
+    if constexpr (nargs == 1) {
+      typename remove_reference<typename arg<0>::type>::type input(args...);
+      auto actual = mem_fn(func)(sol, input);
+      EXPECT_EQ(expect, actual);
+    } else {
+      auto actual = mem_fn(func)(sol, std::forward<Args>(args)...);
+      EXPECT_EQ(expect, actual);
+    }
+  }
+};
+
+#define _VERIFIER verify<SolMemType>(new Solution, SolMem)
+
+#define VERIFY _VERIFIER.do_verify
 
 // Name Pattern: Verify_INPUT_OUTPUT
 // V: vector
@@ -153,28 +248,21 @@ vector<vector<T>> s2vv(const string& s) {
   EXPECT_EQ(s2vv(expect), res); \
 }
 
-#define Verify_V(type, expect, input) { \
-  vector<type> vec_input = BRACED_INIT_LIST input; \
+#define Verify(expect, input) { \
+  EXPECT_EQ(expect, SolFun(input)); \
+}
+
+#define Verify_V(expect, input) { \
+  FunArg0Type vec_input = BRACED_INIT_LIST input; \
   auto res = SolFun(vec_input); \
   EXPECT_EQ(expect, res); \
 }
-
-#define Verify_Vs(expect, input) Verify_V(string, expect, input)
-#define Verify_Vi(expect, input) Verify_V(int, expect, input)
 
 // support verify list input and list return
 #define Verify_L_L(expect, input) { \
   auto* l_in = s2l(input); \
   auto* res = SolFun(l_in); \
   EXPECT_EQ(expect, l2s(res)); \
-}
-
-#define Verify_I_I(expect, input) { \
-  EXPECT_EQ(expect, SolFun(input)); \
-}
-
-#define Verify(expect, input) { \
-  EXPECT_EQ(expect, SolFun(input)); \
 }
 
 // With _Ref means result also returned via input

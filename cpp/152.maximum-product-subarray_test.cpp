@@ -6,5 +6,5 @@
 #define FunName maxProduct
 
 TEST(testname, subname) {
-  Verify_Vi(12, (-4,-3,-2));
+  VERIFY(12, {-4,-3,-2});
 }
