@@ -254,6 +254,9 @@ using clear_const_ref_t = typename clear_const_ref<T>::type;
 template<typename T>
 struct verify;
 
+template<typename R>
+concept list_res_arg = is_integral_v<R>;
+
 template<typename Class, typename R, typename ...Args>
 struct verify<R(Class::*)(Args...)> {
   using mem_func = R(Class::*)(Args...);
@@ -285,7 +288,7 @@ struct verify<R(Class::*)(Args...)> {
   }
 
   void do_verify(R expect, remove_reference_t<Args> ...args) {
-    if (is_same_v<ListNode*, ResultType> && is_same_v<ResultType, Arg0Type>) {
+    if constexpr (is_same_v<ListNode*, ResultType> && is_same_v<ResultType, Arg0Type>) {
       auto actual = mem_fn(func)(sol, args...);
       EXPECT_EQ(l2v(expect), l2v(actual));
       return;
@@ -302,11 +305,15 @@ struct verify<R(Class::*)(Args...)> {
     EXPECT_EQ(expect, actual);
   }
 
-  // void do_verify(ListNode* expect, ListNode* input) {
-  //   auto actual = mem_fn(func)(sol, input);
-  //   EXPECT_EQ(l2v(expect), l2v(actual));
-  //   return;
-  // }
+  // requires is_same_v<T, ListNode*>
+  template<same_as<ListNode*> T = ResultType>
+  void do_verify(
+      const vector<int>& expect,
+      const vector<int>& input) {
+    auto actual = mem_fn(func)(sol, v2l(input));
+    EXPECT_EQ(l2v(v2l(expect)), l2v(actual));
+    return;
+  }
 
 };
 
