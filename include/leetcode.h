@@ -288,7 +288,8 @@ struct verify<R(Class::*)(Args...)> {
   }
 
   void do_verify(R expect, remove_reference_t<Args> ...args) {
-    if constexpr (is_same_v<ListNode*, ResultType> && is_same_v<ResultType, Arg0Type>) {
+    if constexpr (is_same_v<ListNode*, ResultType> &&
+                  is_same_v<ResultType, Arg0Type>) {
       auto actual = mem_fn(func)(sol, args...);
       EXPECT_EQ(l2v(expect), l2v(actual));
       return;
