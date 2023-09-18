@@ -68,6 +68,11 @@ inline constexpr bool is_container_v = is_container<T>::value;
 // }}}
 
 class Solution;
+
+extern Solution g_sol;
+
+#define GsolFun g_sol.FunName
+
 ListNode* v2l(const vector<int>& v);
 
 struct ListNode {
@@ -251,11 +256,7 @@ struct clear_const_ref {
 template<typename T>
 using clear_const_ref_t = typename clear_const_ref<T>::type;
 
-template<typename T>
-struct verify;
-
-template<typename R>
-concept list_res_arg = is_integral_v<R>;
+template<typename T> struct verify;
 
 template<typename Class, typename R, typename ...Args>
 struct verify<R(Class::*)(Args...)> {
@@ -265,8 +266,7 @@ struct verify<R(Class::*)(Args...)> {
 
   inline constexpr static const size_t nargs = sizeof...(Args);
 
-  explicit verify(Solution* s, mem_func f)
-      : sol(s), func(f) {}
+  explicit verify(Solution* s, mem_func f) : sol(s), func(f) {}
 
   using args_tuple = std::tuple<Args...>;
 
@@ -276,8 +276,8 @@ struct verify<R(Class::*)(Args...)> {
   template <size_t i> using arg_t = typename arg<i>::type;
 
   // using Arg0Type = typename remove_reference<typename arg<0>::type>::type;
-  using Arg0Type = clear_const_ref_t<arg_t<0>>;
-  using ResultType = clear_const_ref_t<R>;
+  using Arg0Type = remove_cvref_t<arg_t<0>>;
+  using ResultType = remove_cvref_t<R>;
 
   void do_verify_trunc_ref(Arg0Type expect, remove_reference_t<Args> ...args) {
     auto nums(args...);
@@ -287,7 +287,7 @@ struct verify<R(Class::*)(Args...)> {
     EXPECT_EQ(expect, nums);
   }
 
-  void do_verify(R expect, remove_reference_t<Args> ...args) {
+  void do_verify(R expect, remove_cvref_t<Args> ...args) {
     if constexpr (is_same_v<ListNode*, ResultType> &&
                   is_same_v<ResultType, Arg0Type>) {
       auto actual = mem_fn(func)(sol, args...);
@@ -295,12 +295,12 @@ struct verify<R(Class::*)(Args...)> {
       return;
     }
 
-    if constexpr (nargs == 1) {
-      Arg0Type input(args...);
-      auto actual = mem_fn(func)(sol, input);
-      EXPECT_EQ(expect, actual);
-      return;
-    }
+    // if constexpr (nargs == 1) {
+    //   Arg0Type input(args...);
+    //   auto actual = mem_fn(func)(sol, input);
+    //   EXPECT_EQ(expect, actual);
+    //   return;
+    // }
 
     auto actual = mem_fn(func)(sol, std::forward<Args>(args)...);
     EXPECT_EQ(expect, actual);
@@ -308,11 +308,9 @@ struct verify<R(Class::*)(Args...)> {
 
   // requires is_same_v<T, ListNode*>
   template<same_as<ListNode*> T = ResultType>
-  void do_verify(
-      const vector<int>& expect,
-      const vector<int>& input) {
+  void do_verify(const vector<int>& expect, const vector<int>& input) {
     auto actual = mem_fn(func)(sol, v2l(input));
-    EXPECT_EQ(l2v(v2l(expect)), l2v(actual));
+    EXPECT_EQ(expect, l2v(actual));
     return;
   }
 

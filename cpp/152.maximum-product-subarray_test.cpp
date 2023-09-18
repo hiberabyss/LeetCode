@@ -7,4 +7,5 @@
 
 TEST(testname, subname) {
   VERIFY(12, {-4,-3,-2});
+  VERIFY(120, {-4,-3,-2, -5});
 }

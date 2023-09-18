@@ -5,6 +5,8 @@
 
 #define FunName evalRPN
 
+Solution g_sol;
+
 TEST(testname, subname) {
   VERIFY(6, {"4","13","5","/","+"});
 }
