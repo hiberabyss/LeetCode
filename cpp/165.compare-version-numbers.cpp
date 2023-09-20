@@ -71,6 +71,44 @@
 class Solution {
 public:
     int compareVersion(string version1, string version2) {
+      int i1 = 0;
+      int i2 = 0;
+      int N1 = version1.size();
+      int N2 = version2.size();
 
+      while (i1 < N1 || i2 < N2) {
+        long v1 = 0;
+        long v2 = 0;
+
+        int e1 = i1 + 1;
+        if (i1 < N1) {
+          while (e1 < N1 && version1[e1] != '.') {
+            e1++;
+          }
+
+          v1 = std::stol(version1.substr(i1, e1 - i1));
+        }
+
+        int e2 = i2 + 1;
+        if (i2 < N2) {
+          while (e2 < N2 && version2[e2] != '.') {
+            e2++;
+          }
+          v2 = std::stol(version2.substr(i2, e2 - i2));
+        }
+
+        i1 = e1 + 1;
+        i2 = e2 + 1;
+
+        if (v1 > v2) {
+          return 1;
+        }
+
+        if (v1 < v2) {
+          return -1;
+        }
+      }
+
+      return 0;
     }
 };

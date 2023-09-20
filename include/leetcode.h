@@ -122,25 +122,22 @@ struct TreeNode {
 class Node {
 public:
   int val;
-  Node* left;
-  Node* right;
-  Node* next;
+  Node* left = nullptr;
+  Node* right = nullptr;
+  Node* next = nullptr;
   Node* random = nullptr;
 
   // added for graph in 133
-  vector<Node*> neighbors;
+  vector<Node*> neighbors = vector<Node*>();
 
   Node() : val(0), left(NULL), right(NULL), next(NULL) {
-    neighbors = vector<Node*>();
   }
 
   explicit Node(int _val) : val(_val), left(NULL), right(NULL), next(NULL) {
-    neighbors = vector<Node*>();
   }
 
-  Node(int _val, vector<Node*> _neighbors) {
-    val = _val;
-    neighbors = _neighbors;
+  Node(int _val, const vector<Node*>& _neighbors)
+      : val(_val), neighbors(_neighbors) {
   }
 
   Node(int _val, Node* _left, Node* _right, Node* _next)
@@ -239,8 +236,6 @@ vector<vector<T>> s2vv(const string& s) {
   return res;
 }
 
-#define BRACED_INIT_LIST(...) {__VA_ARGS__}
-
 #define SolFun Solution().FunName
 #define SolMem (&Solution::FunName)
 #define SolMemType decltype(SolMem)
@@ -321,40 +316,5 @@ struct verify<R(Class::*)(Args...)> {
 #define VERIFY _VERIFIER.do_verify
 
 #define VERIFY_TRUNC_REF _VERIFIER.do_verify_trunc_ref
-
-// Name Pattern: Verify_INPUT_OUTPUT
-// V: vector
-// I: int
-#define Verify_I_VV(expect, input) { \
-  auto res = SolFun(input); \
-  EXPECT_EQ(s2vv(expect), res); \
-}
-
-#define Verify(expect, input) { \
-  EXPECT_EQ(expect, SolFun(input)); \
-}
-
-#define Verify_V(expect, input) { \
-  FunArg0Type vec_input = BRACED_INIT_LIST input; \
-  auto res = SolFun(vec_input); \
-  EXPECT_EQ(expect, res); \
-}
-
-// support verify list input and list return
-#define Verify_L_L(expect, input) { \
-  auto* l_in = s2l(input); \
-  auto* res = SolFun(l_in); \
-  EXPECT_EQ(expect, l2s(res)); \
-}
-
-// With _Ref means result also returned via input
-#define Verify_V_I_Ref(expect, input) { \
-  auto nums = s2v(input); \
-  auto expect_vec = s2v(expect); \
-  auto cnt = SolFun(nums); \
-  EXPECT_EQ(expect_vec.size(), cnt); \
-  nums.resize(cnt); \
-  EXPECT_EQ(expect_vec, nums); \
-}
 
 #endif /* end of include guard: LEETCODE_H */
