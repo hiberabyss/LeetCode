@@ -39,6 +39,16 @@ function! LeetcodeGetTestCase()
     return
 endfunction
 
+function! DbgSetup() abort
+  " do nothing for test file
+  if expand('%:t:r') =~ '_test'
+    return
+  endif
+
+  " switch to test file when DbgRun
+  execute "AT"
+endfunction
+
 function! GetQuickfixTestCase()
     " could change to use getqflist()
     copen
@@ -162,7 +172,7 @@ command! -nargs=0 LeetSolution call ShowSolution()
 command! -nargs=+ LeetcodeShow call <SID>LeetcodeGetProblem(<f-args>)
 
 " Linter {{{
-let $CPATH = printf("%s/include", s:project_root) . expand("$CPATH")
+let $CPATH = printf("%s/include:", s:project_root) . expand("$CPATH")
 let s:include_file = printf('-include %s/include/%s',
       \ expand('<sfile>:p:h'), 'leetcode.h')
 

@@ -50,6 +50,13 @@ TEST(l2v, List_to_vec) {
   EXPECT_EQ(expect, l2v(res));
 }
 
+TEST(v2t, TreeNode) {
+  auto* root = v2t({1, 2, 3, 4});
+  EXPECT_EQ(1, root->val);
+  EXPECT_EQ(2, root->left->val);
+  EXPECT_EQ(4, root->left->left->val);
+}
+
 TEST(v2l, subname) {
   auto* l = v2l({1, 2, 3});
   vector<int> expect = {1,2,3};

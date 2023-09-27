@@ -1,12 +1,14 @@
 #ifndef LEETCODE_H
 #define LEETCODE_H
 
+#include <climits>
 #include <functional>
 #include <iostream>
 #include <type_traits>
 #include <vector>
 #include <string>
 #include <set>
+#include <queue>
 #include <unordered_map>
 #include <unordered_set>
 #include <limits.h>
@@ -115,8 +117,53 @@ struct TreeNode {
   TreeNode *right;
   TreeNode() : val(0), left(nullptr), right(nullptr) {}
   explicit TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-  TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+  TreeNode(int x, TreeNode *left, TreeNode *right)
+      : val(x), left(left), right(right) {}
 };
+
+#define null (INT_MIN)
+
+// vector to TreeNode*
+TreeNode* v2t(const vector<long>& data) {
+  if (data.empty()) {
+    return nullptr;
+  }
+
+  int N = data.size();
+  int idx = 1;
+  TreeNode* root = new TreeNode(data[0]);
+  std::queue<TreeNode*> nodes({root});
+  while (!nodes.empty()) {
+    while (!nodes.empty()) {
+      auto* cur = nodes.front();
+      nodes.pop();
+      int l_idx = 2 * idx - 1;
+      int r_idx = 2 * idx;
+
+      idx++;
+
+      if (l_idx < N) {
+        if (data[l_idx] > null) {
+          cur->left = new TreeNode(data[l_idx]);
+          nodes.push(cur->left);
+        } else {
+          nodes.push(nullptr);
+        }
+      }
+
+      if (r_idx < N && data[r_idx] > null) {
+        if (data[r_idx] > null) {
+          cur->right = new TreeNode(data[r_idx]);
+          nodes.push(cur->right);
+        } else {
+          nodes.push(nullptr);
+        }
+      }
+    }
+  }
+
+  return root;
+}
 
 // Graph or Tree Node
 class Node {
@@ -298,6 +345,14 @@ struct verify<R(Class::*)(Args...)> {
     // }
 
     auto actual = mem_fn(func)(sol, std::forward<Args>(args)...);
+    EXPECT_EQ(expect, actual);
+  }
+
+  template<same_as<TreeNode*> T = Arg0Type>
+  void do_verify(R expect, const vector<long>& input) {
+    auto* root = v2t(input);
+    auto actual = mem_fn(func)(sol, root);
+
     EXPECT_EQ(expect, actual);
   }
 
