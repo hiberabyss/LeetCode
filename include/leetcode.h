@@ -337,13 +337,6 @@ struct verify<R(Class::*)(Args...)> {
       return;
     }
 
-    // if constexpr (nargs == 1) {
-    //   Arg0Type input(args...);
-    //   auto actual = mem_fn(func)(sol, input);
-    //   EXPECT_EQ(expect, actual);
-    //   return;
-    // }
-
     auto actual = mem_fn(func)(sol, std::forward<Args>(args)...);
     EXPECT_EQ(expect, actual);
   }
@@ -368,7 +361,9 @@ struct verify<R(Class::*)(Args...)> {
 
 #define _VERIFIER verify<SolMemType>(new Solution, SolMem)
 
-#define VERIFY _VERIFIER.do_verify
+#define VERIFY \
+    printf("%s:%d:\n", __FILE__, __LINE__); \
+    _VERIFIER.do_verify
 
 #define VERIFY_TRUNC_REF _VERIFIER.do_verify_trunc_ref
 

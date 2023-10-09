@@ -15,8 +15,8 @@ function! ShowSolution()
 endfunction
 
 function! LeetcodeCaptureMap()
-    nmap <buffer> <silent> o :call LeetcodeOpenProblem()<cr>
-    nmap <buffer> <silent> <cr> :call LeetcodeOpenProblem()<cr>
+  nmap <buffer> <silent> o :call LeetcodeOpenProblem()<cr>
+  nmap <buffer> <silent> <cr> :call LeetcodeOpenProblem()<cr>
 endfunction
 autocmd FileType capture call LeetcodeCaptureMap()
 
@@ -166,7 +166,15 @@ nmap ,lh :Evcapture! tac <(leetcode list -t algorithms -q hLD)<cr>
 nmap ,lg :LeetcodeShow 
 nmap <A-i> /^\s*$<cr><c-l>cc
 
-autocmd FileType go nmap <buffer> ,rt :call <SID>GoRunTest()<cr>
+function! RunCppTest() abort
+  let test_file = printf("%s_test.%s", expand("%:p:r"), expand("%:e"))
+  exec "Dispatch crunner run " . test_file
+endfunction
+
+autocmd FileType cpp nmap <buffer> <silent> ,rt <CMD>call RunCppTest()<CR>
+
+" autocmd FileType go nmap <buffer> ,rt :call <SID>GoRunTest()<cr>
+
 autocmd BufReadPost,BufWritePost *.go call <SID>GoAddPackageLine()
 command! -nargs=0 LeetSolution call ShowSolution()
 command! -nargs=+ LeetcodeShow call <SID>LeetcodeGetProblem(<f-args>)
@@ -180,6 +188,8 @@ let g:ale_cpp_cc_options = '-std=c++20 -Wall ' .s:include_file
 let g:ale_cpp_clangtidy_options = s:include_file
 ALEDisable | ALEEnable
 " }}}
+
+" let g:runner_cmd.cpp = "crunner run %:p:r_test"
 
 " command! -nargs=1 LCget call LeetcodeGet(<q-args>)
 

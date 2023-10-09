@@ -45,28 +45,64 @@
  */
 class Solution {
 public:
-    bool isPrime(const vector<int>& nums, int n) {
-        for (auto p : nums) {
-            if (n % p == 0) {
-                return false;
-            }
+  // linear filter
+  int countPrimes(int n) {
+    vector<int> numbers(n, 1);
+    std::vector<int> primes;
+
+    for (int i = 2; i < n; i++) {
+      if (numbers[i]) {
+        primes.push_back(i);
+      }
+
+      for (auto p : primes) {
+        if ((long)(p * i) >= n) {
+          break;
         }
 
-        return true;
+        numbers[p*i] = 0;
+        if (i % p == 0) {
+          break;
+        }
+      }
     }
 
-    int countPrimes(int n) {
-        if (n <= 2) {
-            return 0;
-        }
+    return primes.size();
+  }
 
-        vector<int> primes = {2};
-        for (int i = 3; i < n; ++i) {
-            if (isPrime(primes, i)) {
-                primes.push_back(i);
-            }
-        }
+  // Eratosthenes filter
+  int countPrimes2(int n) {
+    vector<int> primes(n, 1);
+    int res = 0;
 
-        return primes.size();
+    for (int i = 2; i < n; ++i) {
+      if (primes[i]) {
+        res += 1;
+
+        for (long j = (long) i*i; j < n; j += i) {
+          primes[j] = 0;
+        }
+      }
     }
+
+    return res;
+  }
+
+  bool isPrime(int n) {
+    for (int i = 2; i*i <= n; i++) {
+      if (n % i == 0) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  int countPrimes1(int n) {
+    int res = 0;
+    for (int i = 2; i < n; i++) {
+      res += isPrime(i);
+    }
+    return res;
+  }
 };
