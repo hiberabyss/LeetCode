@@ -119,7 +119,6 @@ function! s:LeetcodeGetProblem(id, ...)
   endif
 
   execute(printf(':Dispatch! leetcode show -gkx -e tvim -l %s %s', l:lang, a:id))
-  " silent Runtime UltiSnips
 endfunction
 
 function! s:GoRunTest()
@@ -189,7 +188,21 @@ let g:ale_cpp_clangtidy_options = s:include_file
 ALEDisable | ALEEnable
 " }}}
 
-" let g:runner_cmd.cpp = "crunner run %:p:r_test"
+nmap <silent> ,= :sno#[#{#g<cr>:sno#]#}#g<cr>
+vmap <silent> ,= :sno#[#{#g<cr>:'<,'>sno#]#}#g<cr>
+
+function! InitLeetcodeCppTestFile() abort
+  if wordcount().bytes > 0
+    return
+  endif
+
+  call snip#do_expand('inclc')
+endfunction
+
+augroup LeectCode
+  autocmd!
+  autocmd BufNewFile *_test.cpp,*_test.cc call InitLeetcodeCppTestFile()
+augroup END
 
 " command! -nargs=1 LCget call LeetcodeGet(<q-args>)
 
