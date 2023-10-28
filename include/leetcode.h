@@ -165,6 +165,23 @@ TreeNode* v2t(const vector<long>& data) {
   return root;
 }
 
+TreeNode* find(TreeNode* root, long val) {
+  if (root == nullptr) {
+    return nullptr;
+  }
+
+  if (root->val == val) {
+    return root;
+  }
+
+  auto* left_res = find(root->left, val);
+  if (left_res != nullptr) {
+    return left_res;
+  }
+
+  return find(root->right, val);
+}
+
 // Graph or Tree Node
 class Node {
 public:
@@ -194,23 +211,32 @@ public:
 // Input: "[1,2,3]"
 // Output vector: {1, 2, 3}
 template<typename T = int>
-vector<T> s2v(const string& s) {
+vector<T> s2v(string s) {
   vector<T> res;
-  if (s.size() <= 2) {
-    return res;
-  }
 
-  int pos = 1;
+	if (s.empty()) {
+		return res;
+	}
+
+	if (s[0] == '[') {
+		s = s.substr(1, s.size() - 2);
+	}
+
+  int pos = 0;
   while (pos < s.size()) {
     auto next_pos = s.find(',', pos);
     if (next_pos == string::npos) {
-      next_pos = s.size() - 1;
+      next_pos = s.size();
     }
     
     auto subs = s.substr(pos, next_pos - pos);
 
     if constexpr (is_integral_v<T>) {
-      res.push_back(stoll(subs));
+      if (subs == "null") {
+        res.push_back(null);
+      } else {
+        res.push_back(stoll(subs));
+      }
     } else {
       res.push_back(subs);
     }

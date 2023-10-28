@@ -49,20 +49,41 @@ function! DbgSetup() abort
   execute "AT"
 endfunction
 
-function! GetQuickfixTestCase()
-    " could change to use getqflist()
-    copen
-    let linenr = search(' testcase: ', 'wn')
-    if linenr > 0
-        let match_res = matchlist(getline(linenr), '\v testcase: (.*)$')
-        if len(match_res) > 1
-            return match_res[1]
-        endif
-    endif
-    wincmd w
+function! LcGetQuickfixInfo(name)
+    for item in getqflist()
+      let pattern = printf('\v %s: (.*)$', a:name)
+      let match_res = matchlist(item.text, pattern)
+      if len(match_res) > 1
+        return match_res[1]
+      endif
+    endfor
 
     return ""
 endfunction
+
+function! LcRefineTestStr(str) abort
+  let str = substitute(a:str, '\V[', '{', 'g')
+  let str = substitute(str, '\V]', '}', 'g')
+  return str
+endfunction
+
+function! LcQfTestCase() abort
+  let expect = LcRefineTestStr(LcGetQuickfixInfo('expected_answer'))
+  let testcase = LcRefineTestStr(LcGetQuickfixInfo('testcase'))
+  if len(testcase) > 2 && testcase[0] == "'"
+    let testcase = testcase[1:-2]
+  endif
+
+  return printf("%s, %s", expect, testcase)
+endfunction
+
+function! LcPrintBinTree() abort
+  normal "xyi[
+  let tree_str = @x
+  exec printf("Ecapture lc-print-bintree '%s'", tree_str)
+endfunction
+
+command! -nargs=0 LcPrintTree call LcPrintBinTree()
 
 function! LeetcodeOpenUrl()
   let linenr = search(' https:\/\/leetcode', 'wn')
@@ -171,8 +192,6 @@ function! RunCppTest() abort
 endfunction
 
 autocmd FileType cpp nmap <buffer> <silent> ,rt <CMD>call RunCppTest()<CR>
-
-" autocmd FileType go nmap <buffer> ,rt :call <SID>GoRunTest()<cr>
 
 autocmd BufReadPost,BufWritePost *.go call <SID>GoAddPackageLine()
 command! -nargs=0 LeetSolution call ShowSolution()

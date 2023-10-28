@@ -92,18 +92,24 @@ void printPretty(TreeNode *root, int level, int indentSpace, ostream& out) {
   printLeaves(indentSpace, level, nodesInThisLevel, nodesQueue, out);
 }
 
-int main(int argc, char* argv[]) {
-  TreeNode *root = v2t({1,2,3,null,5,null,4});
+int main(int argc, const char* argv[]) {
+  string tree_str = "[1,2,3,null,5,null,4]";
+  if (argc > 1) {
+    tree_str = argv[1];
+  }
+  std::vector<long> tree_vec = s2v<long>(tree_str);
+  TreeNode *root = v2t(tree_vec);
 
-  cout << "Tree pretty print with level=1 and indentSpace=0\n\n";
+  // cout << "Tree pretty print with level=1 and indentSpace=0\n\n";
   // Output to console
   printPretty(root, 1, 0, cout);
 
-  cout << "\n\nTree pretty print with level=5 and indentSpace=3,\noutput to file \"tree_pretty.txt\".\n\n";
+  // cout << "\n\nTree pretty print with level=5 and indentSpace=3,\noutput to file \"tree_pretty.txt\".\n\n";
+
   // Create a file and output to that file
-  ofstream fout("tree_pretty.txt");
+  // ofstream fout("tree_pretty.txt");
   // Now print a tree that's more spread out to the file
-  printPretty(root, 5, 0, fout);
+  // printPretty(root, 5, 0, fout);
 
   return 0;
 }
