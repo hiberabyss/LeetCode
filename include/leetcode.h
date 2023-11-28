@@ -20,6 +20,9 @@ using namespace std;
 
 struct ListNode;
 
+template<typename T>
+concept NotVoid = !is_same_v<T, void>;
+
 // extract function arguments type {{{
 template<typename T> struct function_traits;  
 
@@ -327,6 +330,34 @@ using clear_const_ref_t = typename clear_const_ref<T>::type;
 template<typename T> struct verify;
 
 template<typename Class, typename R, typename ...Args>
+class _Verifier {
+public:
+  template <std::size_t N>
+  using ArgsType = typename tuple_element<N, tuple<Args...>>::type;
+
+  using Arg0Type = remove_cvref_t<ArgsType<0>>;
+  using mem_func = R(Class::*)(Args...);
+
+  _Verifier(Solution* s, mem_func f) : sol(s), func(f) {}
+  unique_ptr<Solution> sol;
+  mem_func func;
+};
+
+template<typename Class, typename ...Args>
+struct verify<void(Class::*)(Args...)> : public _Verifier<Class, void, Args...> {
+  using Base = _Verifier<Class, void, Args...>;
+
+  explicit verify(Solution* s, Base::mem_func f) : Base(s, f) {}
+
+  void do_verify(const Base::Arg0Type& expect, const Base::Arg0Type& input) {
+    auto val = input;
+    mem_fn(Base::func)(Base::sol, val);
+
+    EXPECT_EQ(expect, val);
+  }
+};
+
+template<typename Class, typename R, typename ...Args>
 struct verify<R(Class::*)(Args...)> {
   using mem_func = R(Class::*)(Args...);
   unique_ptr<Solution> sol;
@@ -347,7 +378,7 @@ struct verify<R(Class::*)(Args...)> {
   using Arg0Type = remove_cvref_t<arg_t<0>>;
   using ResultType = remove_cvref_t<R>;
 
-  void do_verify_trunc_ref(Arg0Type expect, remove_reference_t<Args> ...args) {
+  void do_verify_trunc_ref(Arg0Type expect, remove_reference_t<Args>... args) {
     auto nums(args...);
     auto cnt = mem_fn(func)(sol, nums);
     EXPECT_EQ(expect.size(), cnt);
