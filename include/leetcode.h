@@ -13,6 +13,7 @@
 #include <unordered_set>
 #include <limits.h>
 #include <algorithm>
+#include <numeric>
 #include <stack>
 #include <gtest/gtest.h>
 

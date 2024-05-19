@@ -61,6 +61,27 @@
 class Solution {
 public:
     ListNode* oddEvenList(ListNode* head) {
+      ListNode odd_dummy;
+      ListNode even_dummy;
 
+      ListNode* odd = &odd_dummy;
+      ListNode* even = &even_dummy;
+      int i = 1;
+      while (head != nullptr) {
+        if (i % 2) {
+          odd->next = head;
+          odd = odd->next;
+        } else {
+          even->next = head;
+          even = even->next;
+        }
+        head = head->next;
+        i++;
+      }
+
+      odd->next = even_dummy.next;
+      even->next = nullptr;
+
+      return odd_dummy.next;
     }
 };

@@ -22,11 +22,6 @@ autocmd FileType capture call LeetcodeCaptureMap()
 
 command! -nargs=0 GoTest call s:GoRunTest()
 
-function! LeetcodeInit()
-  let g:leetcode_lang = fnamemodify($PWD, ':t')
-endfunction
-call LeetcodeInit()
-
 function! LeetcodeGetTestCase()
     let linenr = search(' Testcase Example: ', 'wn')
     if linenr > 0
@@ -166,6 +161,9 @@ function! LeetcodeOpenProblem()
     return
   endif
 
+  " close problem list window
+  close
+
   let problem_id = items[1]
   call s:LeetcodeGetProblem(problem_id, g:leetcode_lang)
 endfunction
@@ -191,7 +189,8 @@ function! RunCppTest() abort
   exec "Dispatch crunner run " . test_file
 endfunction
 
-autocmd FileType cpp nmap <buffer> <silent> ,rt <CMD>call RunCppTest()<CR>
+" autocmd FileType cpp nmap <buffer> <silent> ,rt <CMD>call RunCppTest()<CR>
+nmap <silent> ,rt <CMD>call RunCppTest()<CR>
 
 autocmd BufReadPost,BufWritePost *.go call <SID>GoAddPackageLine()
 command! -nargs=0 LeetSolution call ShowSolution()
@@ -222,6 +221,14 @@ augroup LeectCode
   autocmd!
   autocmd BufNewFile *_test.cpp,*_test.cc call InitLeetcodeCppTestFile()
 augroup END
+
+function! LeetcodeInit()
+  let g:leetcode_lang = fnamemodify($PWD, ':t')
+  if empty(bufname())
+    normal ,lm
+  endif
+endfunction
+call LeetcodeInit()
 
 " command! -nargs=1 LCget call LeetcodeGet(<q-args>)
 
