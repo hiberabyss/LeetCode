@@ -192,7 +192,7 @@ endfunction
 " autocmd FileType cpp nmap <buffer> <silent> ,rt <CMD>call RunCppTest()<CR>
 nmap <silent> ,rt <CMD>call RunCppTest()<CR>
 
-autocmd BufReadPost,BufWritePost *.go call <SID>GoAddPackageLine()
+" autocmd BufReadPost,BufWritePost *.go call <SID>GoAddPackageLine()
 command! -nargs=0 LeetSolution call ShowSolution()
 command! -nargs=+ LeetcodeShow call <SID>LeetcodeGetProblem(<f-args>)
 
@@ -225,7 +225,8 @@ augroup END
 function! LeetcodeInit()
   let g:leetcode_lang = fnamemodify($PWD, ':t')
   if empty(bufname())
-    normal ,lm
+    " normal ,lm
+    normal ,le
   endif
 endfunction
 call LeetcodeInit()
